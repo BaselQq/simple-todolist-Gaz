@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className="App">
-      <div className="container mt-6 ">
+      <div className="container mt-6 px-6">
         <Input onInput={(task) => onAdd(task)} />
         {tasks.map((task) => (
           <Task
