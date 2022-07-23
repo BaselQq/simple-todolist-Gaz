@@ -1,23 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import Input from "./input";
+import Task from "./task";
+import { useState } from "react";
 
 function App() {
+  const [tasks, setTasks] = useState([]);
+  const onAdd = (task) => setTasks([...tasks, task]);
+  const onDelete = (id) => setTasks(tasks.filter((task) => task.id !== id));
+  const onEdit = (id) => setTasks(tasks.map((task) => task.id === id ? { ...task, edited: true } : { ...task }));
+  const onDone = (id) => setTasks(tasks.map((task) => task.id === id ? { ...task, done: !task.done } : { ...task }));
+  const onEditDone = (newTask) => setTasks(tasks.map((task) => task.id === newTask.id ? { ...task, name: newTask.name, edited: false } : { ...task }));
+  const onEditCancel = (id) => setTasks(tasks.map((task) => task.id === id ? { ...task, edited: false } : { ...task }));
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="container mt-6 ">
+        <Input onInput={(task) => onAdd(task)} />
+        {tasks.map((task) => (
+          <Task
+            key={task.id}
+            task={task}
+            onDelete={() => onDelete(task.id)}
+            onDone={() => onDone(task.id)}
+            onEdit={() => onEdit(task.id)}
+            onEditDone={(newTask) => onEditDone(newTask)}
+            onEditCancel={(id) => onEditCancel(id)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
