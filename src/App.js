@@ -1,34 +1,28 @@
-import Input from "./input";
-import Task from "./task";
-import { useState } from "react";
+import { useReducer } from 'react'
+import Task from './Task'
+import AddForm from './AddForm'
+import Container from './Components/Container'
+import reducer from './Store/reducer'
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-  const onAdd = (task) => setTasks([...tasks, task]);
-  const onDelete = (id) => setTasks(tasks.filter((task) => task.id !== id));
-  const onEdit = (id) => setTasks(tasks.map((task) => task.id === id ? { ...task, edited: true } : { ...task }));
-  const onDone = (id) => setTasks(tasks.map((task) => task.id === id ? { ...task, done: !task.done } : { ...task }));
-  const onEditDone = (newTask) => setTasks(tasks.map((task) => task.id === newTask.id ? { ...task, name: newTask.name, edited: false } : { ...task }));
-  const onEditCancel = (id) => setTasks(tasks.map((task) => task.id === id ? { ...task, edited: false } : { ...task }));
+	const [tasks, dispatch] = useReducer(reducer, [], () => [])
 
-  return (
-    <div className="App">
-      <div className="container mt-6 px-6">
-        <Input onInput={(task) => onAdd(task)} />
-        {tasks.map((task) => (
-          <Task
-            key={task.id}
-            task={task}
-            onDelete={() => onDelete(task.id)}
-            onDone={() => onDone(task.id)}
-            onEdit={() => onEdit(task.id)}
-            onEditDone={(newTask) => onEditDone(newTask)}
-            onEditCancel={(id) => onEditCancel(id)}
-          />
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<Container>
+			<AddForm onAdd={task => dispatch({ type: 'add', payload: task })} />
+			{tasks.map(task => (
+				<Task
+					key={task.id}
+					task={task}
+					onDelete={() => dispatch({ type: 'delete', payload: task.id })}
+					onDone={() => dispatch({ type: 'done', payload: task.id })}
+					onEdit={() => dispatch({ type: 'edit', payload: task.id })}
+					onEditDone={task => dispatch({ type: 'editDone', payload: task })}
+					onEditCancel={id => dispatch({ type: 'editCancel', payload: id })}
+				/>
+			))}
+		</Container>
+	)
 }
 
-export default App;
+export default App
